@@ -6,7 +6,7 @@ export interface SpaFrontendProps extends cdk.StackProps{
     userPoolArn: string;
 }
 
-export class SpaFrontendStack extends cdk.Stack {
+export class ApiGatewayStack extends cdk.Stack {
 
     constructor(scope: cdk.App, id: string, props: SpaFrontendProps) {
 
