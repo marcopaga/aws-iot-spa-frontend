@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Lambda Calling Sample</title>
+</head>
+<body>
+
+<h1>Lambda Calling Sample</h1>
+
+<div id="lambda-demo">
+    <button type="button" onclick="loadXMLDoc()">Trigger the AWS lambda</button>
+</div>
+
+<script>
+    function loadXMLDoc() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("lambda-demo").innerHTML =
+                    this.responseText;
+            }
+        };
+        xhttp.open("GET", "/dev/hello", true);
+        xhttp.send();
+    }
+</script>
+
+</body>
+</html>

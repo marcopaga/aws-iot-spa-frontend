@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 import * as cdk from '@aws-cdk/core';
 import {ApiGatewayStack} from '../lib/api-gateway-stack';
-import {UserPoolStack} from '../lib/userpool-stack';
+import {SpaStack} from "../lib/spa-stack";
 
 const app = new cdk.App();
-// new AwsIotSpaFrontendStack(app, 'AwsIotSpaFrontendStack');
 
-let userPoolStack = new UserPoolStack(app, 'UserPoolStack');
-new ApiGatewayStack(app, 'ApiGatewayStack', {userPoolArn: userPoolStack.userPool.userPoolArn});
-
+let apiGatewayStack = new ApiGatewayStack(app, 'ApiGatewayStack', {} );
+new SpaStack(app, "SpaStack", {restApi: apiGatewayStack.restApi} )
 app.synth();

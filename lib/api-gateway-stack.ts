@@ -1,14 +1,15 @@
 import * as cdk from '@aws-cdk/core';
-import {AuthorizationType, CfnAuthorizer, LambdaIntegration, RestApi} from "@aws-cdk/aws-apigateway";
+import {LambdaIntegration, RestApi} from "@aws-cdk/aws-apigateway";
 import {AssetCode, Function, Runtime} from "@aws-cdk/aws-lambda";
 
-export interface SpaFrontendProps extends cdk.StackProps{
-    userPoolArn: string;
+export interface ApiGatewayProps extends cdk.StackProps {
 }
 
 export class ApiGatewayStack extends cdk.Stack {
 
-    constructor(scope: cdk.App, id: string, props: SpaFrontendProps) {
+    public readonly restApi: RestApi
+
+    constructor(scope: cdk.App, id: string, props: ApiGatewayProps) {
 
         super(scope, id, props);
 
@@ -21,7 +22,7 @@ export class ApiGatewayStack extends cdk.Stack {
             }
         });
 
-        const restApi: RestApi = new RestApi(this, this.stackName + "RestApi", {
+        this.restApi = new RestApi(this, this.stackName + "RestApi", {
             deployOptions: {
                 stageName: "dev",
                 metricsEnabled: true,
@@ -29,20 +30,9 @@ export class ApiGatewayStack extends cdk.Stack {
             },
         });
 
-        const authorizer = new CfnAuthorizer(this, 'cfnAuth', {
-            restApiId: restApi.restApiId,
-            name: 'ApiAuthorizer',
-            type: 'COGNITO_USER_POOLS',
-            identitySource: 'method.request.header.Authorization',
-            providerArns: [props.userPoolArn],
-        })
+        this.restApi.root.addMethod("GET", new LambdaIntegration(helloWorldFunction, {}), {});
 
-        restApi.root.addMethod("GET", new LambdaIntegration(helloWorldFunction, {}), {
-            authorizationType: AuthorizationType.COGNITO,
-            authorizer: {
-                authorizerId: authorizer.ref
-            }
-        });
-
+        let helloResource = this.restApi.root.addResource('hello');
+        helloResource.addMethod('GET', new LambdaIntegration(helloWorldFunction, {}));
     }
 }
